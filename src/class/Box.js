@@ -4,6 +4,7 @@ class Box {
     #color;
     #free;
     #open;
+    #element;
 
     constructor(row, col, color) {
         this.#col = col;
@@ -21,6 +22,43 @@ class Box {
         return this.#row;
     }
 
+    get open() {
+        return this.#open;
+    }
+
+    get color() {
+        return this.#color;
+    }
+
+    get free() {
+        return this.#free;
+    }
+
+    set element(element) {
+        this.#element = element;
+    }
+
+    set free(newValue) {
+        this.#free = newValue;
+    }
+
+    addEventClick() {
+        if (this.#element) {
+          this.#element.addEventListener("click", (e) => {
+            if (!this.#open) {
+              this.#element.style.backgroundColor = this.#color;
+              this.#open = true;
+              console.log("Haz hecho click en una tarjeta");
+            }
+            return false;
+          });
+        }
+      }
+
+    resetColor() {
+        this.#element.style.backgroundColor = 'black';
+        this.#open = false;
+    }
 }
 
 export default Box
