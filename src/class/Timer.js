@@ -39,6 +39,7 @@ class Timer {
                   ms: this.ms,
                   min: this.min,
                 };
+                localStorage.setItem("timer", JSON.stringify(timerObject));
               }
               this.sec++;
             }
@@ -61,12 +62,6 @@ class Timer {
       update(txt) {
         let temp = document.getElementById(this.idElement);
         temp.firstChild.nodeValue = txt;
-        let timerObject = {
-            min: this.min,
-            sec: this.sec,
-            ms: this.ms,
-        };
-        localStorage.setItem('timer', JSON.stringify(timerObject)); 
       }
     
       pad(time) {

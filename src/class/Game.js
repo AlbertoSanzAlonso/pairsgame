@@ -48,6 +48,7 @@ class Game {
       } else {
         setTimeout(() => {
           nOpenBoxes.map((box) => {
+            box.open = false;
             box.resetColor();
           });
         }, 500);
@@ -55,7 +56,20 @@ class Game {
     } else {
       this.arrayBoxesToLocalStorage();
     }
+    this.checkFinishGame();
   }
+
+  checkFinishGame() {
+    let freeBox = this.#boxes.filter((box) => box.free);
+    if (freeBox.length === 0) {
+      setTimeout(() => {
+        this.timer.stop();
+        alert('Juego finalizado');
+      }, 1000);
+      Game.resetGame();
+    }
+  }
+
 
   createRandomColors() {
     let randomColors = [];

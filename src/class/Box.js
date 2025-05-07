@@ -26,6 +26,10 @@ class Box {
         return this.#open;
     }
 
+    set open(choice) {
+        this.#open = choice;
+    }
+
     get color() {
         return this.#color;
     }
