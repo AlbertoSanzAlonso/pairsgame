@@ -1,6 +1,7 @@
 import { shuffleArray } from "../utils/utils";
 
 import Box from "./Box";
+import Timer from "./Timer";
 
 class Game {
   #rows;
@@ -8,6 +9,7 @@ class Game {
   #idElement;
   #boxes;
   element;
+  timer;
 
   constructor(rows, cols, idElement = "game") {
     this.#rows = rows;
@@ -22,6 +24,8 @@ class Game {
     this.element.addEventListener("click", () => {
       this.checkOpenBoxes();
     });
+
+    this.initTimer();
   }
 
   get cols() {
@@ -104,6 +108,15 @@ class Game {
   }
 
   paintBoxes() {
+    let header = document.createElement('header');
+    header.setAttribute('id', 'boxHeader');
+    this.element.appendChild(header);
+
+    let boxContainer = document.createElement('div');
+    boxContainer.setAttribute('id', 'boxContainer');
+    this.element.appendChild(boxContainer);
+    
+
     this.setCSSBoxTemplates();
     this.#boxes.map((box) => {
       let newBoxDiv = document.createElement("div");
@@ -111,17 +124,28 @@ class Game {
       if(!box.free ||  box.open) {
         newBoxDiv.style.backgroundColor = box.color;
       } 
-      // newBoxDiv.dataset.col = box.col;
-      // newBoxDiv.dataset.row = box.row;
       box.element = newBoxDiv;
       box.addEventClick();
-      this.element.appendChild(newBoxDiv);
+      boxContainer.appendChild(newBoxDiv);
     });
   }
 
+  initTimer() {
+    let timerContainer = document.createElement('h2');
+    timerContainer.setAttribute("id", "timerContainer");
+    timerContainer.innerHTML = '<span id="timer">00:00:00</span>';
+
+    let header = document.getElementById("boxHeader");
+    header.appendChild(timerContainer);
+    this.timer = new Timer();
+    this.timer.start();
+
+  }
+
   setCSSBoxTemplates() {
-    this.element.style.gridTemplateColumns = `repeat(${this.cols}, 1fr)`;
-    this.element.style.gridTemplateRows = `repeat(${this.rows}, 1fr)`;
+    let boxContainer = document.getElementById('boxContainer');
+    boxContainer.style.gridTemplateColumns = `repeat(${this.cols}, 1fr)`;
+    boxContainer.style.gridTemplateRows = `repeat(${this.rows}, 1fr)`;
   }
 
   static getRowsCols() {
@@ -154,6 +178,7 @@ class Game {
     localStorage.removeItem('cols');
     localStorage.removeItem('rows');
     localStorage.removeItem('boxes');
+    localStorage.removeItem('timer');
     location.reload();
   }
 }
