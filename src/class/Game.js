@@ -40,6 +40,7 @@ class Game {
         nOpenBoxes.map((box) => {
           box.free = false;
         });
+        this.arrayBoxesToLocalStorage();
       } else {
         setTimeout(() => {
           nOpenBoxes.map((box) => {
@@ -47,6 +48,8 @@ class Game {
           });
         }, 500);
       }
+    } else {
+      this.arrayBoxesToLocalStorage();
     }
   }
 
@@ -65,14 +68,39 @@ class Game {
   }
 
   createBoxes() {
-    let randomColors = this.createRandomColors();
-    for (let row = 0; row < this.#rows; row++) {
-      for (let col = 0; col < this.#cols; col++) {
-        let color = randomColors.shift();
-        let newBox = new Box(row, col, color);
+    this.#boxes = [];
+    // Si hay datos en localStorage, creo las boxes desde ahí y si no las genero normalmente
+    if (localStorage.getItem('boxes') !== null) {
+      let boxesFromLocalStorage = JSON.parse(localStorage.getItem('boxes'));
+      boxesFromLocalStorage.map((box) => {
+        let newBox = new Box(box.row, box.col, box.color, box.free, box.open);
         this.#boxes.push(newBox);
+      });
+    } else {
+      let randomColors = this.createRandomColors();
+      for (let row = 0; row < this.#rows; row++) {
+        for (let col = 0; col < this.#cols; col++) {
+          let color = randomColors.shift();
+          let newBox = new Box(row, col, color);
+          this.#boxes.push(newBox);
+        }
       }
+      this.arrayBoxesToLocalStorage();
     }
+
+  }
+
+  arrayBoxesToLocalStorage() {
+    let arrayBoxesToLocalStorage = this.#boxes.map((box) => {
+      return {
+        row: box.row,
+        col: box.col,
+        color: box.color,
+        free: box.free,
+        open: box.open,
+      }
+    })
+    localStorage.setItem("boxes", JSON.stringify(arrayBoxesToLocalStorage));
   }
 
   paintBoxes() {
@@ -80,8 +108,11 @@ class Game {
     this.#boxes.map((box) => {
       let newBoxDiv = document.createElement("div");
       newBoxDiv.classList.add("box");
-      newBoxDiv.dataset.col = box.col;
-      newBoxDiv.dataset.row = box.row;
+      if(!box.free ||  box.open) {
+        newBoxDiv.style.backgroundColor = box.color;
+      } 
+      // newBoxDiv.dataset.col = box.col;
+      // newBoxDiv.dataset.row = box.row;
       box.element = newBoxDiv;
       box.addEventClick();
       this.element.appendChild(newBoxDiv);
@@ -96,12 +127,9 @@ class Game {
   static getRowsCols() {
     let rows, cols;
 
-    if (
-      localStorage.getItem("rows") !== null &&
-      localStorage.getItem("cols") !== null
-    ) {
-      rows = parseInt(localStorage.getItem("rows"));
-      cols = parseInt(localStorage.getItem("cols"));
+    if (localStorage.getItem('rows') !== null && localStorage.getItem('cols') !== null) {
+      rows = parseInt(localStorage.getItem('rows'));
+      cols = parseInt(localStorage.getItem('cols'));
     } else {
       rows = parseInt(prompt("Introduzca el número de filas"));
       cols = parseInt(prompt("Introduzca el número de columnas"));
@@ -112,17 +140,23 @@ class Game {
         rows = parseInt(prompt("Introduzca el número de filas"));
         cols = parseInt(prompt("Introduzca el número de columnas"));
       }
-
-      localStorage.setItem("rows", rows);
-      localStorage.setItem("cols", cols);
+  
+      localStorage.setItem('rows', rows);
+      localStorage.setItem('cols', cols);
     }
-
     return {
       rows: rows,
       cols: cols,
-    };
-  }
+    }
+  };
 
+  static resetGame() {
+    localStorage.removeItem('cols');
+    localStorage.removeItem('rows');
+    localStorage.removeItem('boxes');
+    location.reload();
+  }
 }
+
 
 export default Game;

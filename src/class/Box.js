@@ -6,12 +6,12 @@ class Box {
     #open;
     #element;
 
-    constructor(row, col, color) {
+    constructor(row, col, color, free=true, open=false) {
         this.#col = col;
         this.#row = row;
         this.#color = color;
-        this.#free = true;
-        this.#open = false;
+        this.#free = free;
+        this.#open = open;
     }
 
     get col() {
@@ -48,7 +48,7 @@ class Box {
             if (!this.#open) {
               this.#element.style.backgroundColor = this.#color;
               this.#open = true;
-              console.log("Haz hecho click en una tarjeta");
+
             }
             return false;
           });
